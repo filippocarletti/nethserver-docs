@@ -15,7 +15,7 @@ HotSync
 
 .. warning::
 
-   For a correct restore, it's suggested to configure HotSync on two identical servers or two servers with same network cards number, name and position. If you restore master on a not identical slave server you can encounter some problems and you'll have to fix it consulting troubleshooting section.
+   For a correct restore, it's suggested to configure HotSync on two identical servers or two servers with same network cards number, name and position. If you restore master on a not identical slave server you can encounter some problems and you'll have to fix it consulting the troubleshooting section.
 
 
 HotSync aims to reduce downtime in case of failure, syncing your |product| with another one, that will be manually activated in case of master server failure.
@@ -23,8 +23,8 @@ HotSync aims to reduce downtime in case of failure, syncing your |product| with 
 Normally, when a hardware damage occurs, the time needed to restore service is:
 
 1. fix/buy another server: from 4h to 2 days
-2. install OS: 30 minutes
-3. restore backup: from 10 minutes to 8 hours
+2. install OS: around 30 minutes
+3. restore backup: from 10 minutes to many hours, depending on data size
 
 In summary, users are able to start working again with data from the night before failure after a few hours/days. Using HotSync, time 1 and 3 are 0, 2 is 5 minutes (time to activate spare server). Users are able to start working again in few minutes, using data from a few minutes before the crash.
 
@@ -36,11 +36,11 @@ Applications that use PostgreSQL are synchronized (Mattermost, Webtop5) unless d
 Terminology
 ===========
 
-- MASTER is the production system SLAVE is the spare server
+- MASTER is the production system, SLAVE is the spare server
 - SLAVE is switched on, with an IP address different than MASTER
 - Every 15 minutes, MASTER makes a backup on SLAVE
-- If something went wrong, an email is sent to root (admin if mail server is installed)
-- SLAVE check updates and makes some system operations every 60 minutes
+- If something goes wrong, an email is sent to root (admin if mail server is installed)
+- SLAVE checks for updates and makes some system operations every 60 minutes
 
 
 Installation
@@ -69,7 +69,7 @@ Installation
 Configuration
 =============
 
-You can configure HotSync from Cockpit interface: access this from Master and Slave, select role and fill required fields with password and IP.
+You can configure HotSync from Cockpit interface: access this from Master and Slave, select role and fill the required fields with password and IP.
 The ``<PASSWORD>`` must be the same on master and slave.
 
 You can also configure HotSync from command line using these commands:
@@ -145,40 +145,40 @@ Restore: put SLAVE in production
 
 The following procedure puts the SLAVE in production when the master has crashed.
 
-1. Switch off MASTER.
+1. Switch off MASTER
 
-2. If the SLAVE machine must run as network gateway, connect it to the router/modem with a network cable.
+2. If the SLAVE machine must run as network gateway, connect it to the router/modem with a network cable
 
 3. On SLAVE, if you are connected through an ssh console, launch the ``screen`` command, to make your session survive to network outages::
 
     [root@slave]# screen
 
-   It's suggested to execute following procedure directly from the console and not via ssh.
+   It's suggested to execute the following procedure directly from the console and not via ssh.
 
 4. on SLAVE launch the following command, and read carefully its output ::
 
     [root@slave]# hotsync-promote
 
-   If no internet connection is detected (e.g. you are restoring a firewall on a machine that was passing through crashed master for internet connection), the scripts will purpose you some options ::
+   If no internet connection is detected (e.g. you are restoring a firewall on a machine that was routed through the crashed master for internet connection), the scripts will offer you some options ::
    
-    1. Restore master network configuration (IMPORTANT: use this option only if two servers are identical - NIC number, names and positions must be identical)
+    1. Restore master network configuration (IMPORTANT: use this option only if the two servers are similar - NIC number, names and positions must be identical)
     2. Fix network configuration from Cockpit GUI (if you are restoring on different hardware)
-    3. Continue without internet: assign correct roles before proceed with this option. Some events could fails (not recommended)
+    3. Continue without internet: assign correct roles before proceeding with this option, some events could fail (not recommended)
    
-   else restore will start automatically. If you are restore on different hardware you could encounter DC errors.
+   Otherwise, the restore will start automatically. If you are restoring on different hardware you could encounter DC errors.
    
 .. warning::
 
-    If you are restoring on identical hardware choose option 1 and network configuration will be overwritten, else choose option 2. It's not recommended to start promote procedure without internet.
-    If you are restoring on a different hardware and you've choosed option 2, you can encounter DC errors. Read troubleshooting section.
+    If you are restoring on identical hardware choose option 1 and network configuration will be overwritten, else choose option 2. It's not recommended to start the promote procedure without an internet connection.
+    If you are restoring on a different hardware and you've chosen option 2, you can encounter DC errors. Please, read the  troubleshooting section.
 
-5. If necessary go to Server Manager or Cockpit GUI, in page ``Network`` and reassign roles to network interfaces as master one. Remember also to recreate bridge if you have configured DC. In case of DC errors consult troubleshooting section before proceed with network restore.
+5. If necessary, go to Server Manager or Cockpit GUI, in page ``Network`` and reassign roles to network interfaces as on the master. Remember to recreate the bridge network interface if you have configured the DC. In case of DC errors consult the troubleshooting section before proceeding with the network restore.
 
-6. After all is restored launch the command ::
+6. After everything is restored launch the command ::
 
     [root@slave]# /sbin/e-smith/signal-event post-restore-data
 
-7. Ypdate the system to the latest packages version ::
+7. Update the system to the latest packages version ::
 
     [root@slave]# yum clean all && yum -y update
 
@@ -216,13 +216,13 @@ If you cannot reach server after a network reconfiguration, check configuration 
     /sbin/e-smith/signal-event interface-update
     /sbin/e-smith/signal-event nethserver-firewall-base-update
     
-If you cannot reach the server yet, use ``network-recovery`` tool.
+If you cannot reach the server yet, use the ``network-recovery`` tool.
 
 
-Some check after restore
-------------------------
+Additional checks after restore
+-------------------------------
 
-After you've solved issues of configuration restore you should make some checks:
+After solving issues of configuration restore you should make some checks:
 - configuration is restored properly
 - all enabled services are working
 - applications interfaces (e.g. freepbx, webtop) are working
